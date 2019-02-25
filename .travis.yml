@@ -30,7 +30,6 @@ env:
   - BRANCH=3.3.5-pvpranks
   - BRANCH=3.3.5-tele_npc_3
   - BRANCH=3.3.5-custom_links
-  - BRANCH=3.3.5-blink
 
 before_install:
   - git clone --depth=100 --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
