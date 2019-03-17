@@ -29,4 +29,5 @@ services:
 
 script:
   - rm -rf .git
-  - sh release-tdb.sh
+  - chmod +x release-tdb.sh
+  - ./release-tdb.sh

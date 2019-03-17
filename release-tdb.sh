@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Release TDB
 
 #  Install p7zip-full and jq from apt-get as prerequisite
