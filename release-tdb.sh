@@ -130,9 +130,11 @@ mysql -uroot -D world -e "update \`updates\` set \`state\`='ARCHIVED';"
 mysqldump -uroot auth --default-character-set='utf8' --result-file sql/base/auth_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/auth_database.sql
 sed -i -e 's$),($),\n($g' sql/base/auth_database.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/auth_database.sql
 mysqldump -uroot characters --default-character-set='utf8' --result-file sql/base/characters_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
 mysqldump -uroot world --default-character-set='utf8' --no-data --result-file sql/base/dev/world_database.sql
 git add sql
 
