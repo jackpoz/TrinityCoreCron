@@ -136,6 +136,7 @@ sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
 mysqldump -uroot world --default-character-set='utf8' --no-data --result-file sql/base/dev/world_database.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/world_database.sql
 git add sql
 
 # 14. dump world db to sql
