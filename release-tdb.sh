@@ -6,7 +6,7 @@
 
 #  1. environmental variables
 #GITHUB_TOKEN=
-REPO_OWNER=TrinityCore
+REPO_OWNER=jackpoz
 REPO_URL=https://github.com/${REPO_OWNER}/TrinityCore.git
 PUSH_URL=https://${GITHUB_TOKEN}@github.com/${REPO_OWNER}/TrinityCore.git
 GITHUB_API=https://api.github.com/repos/${REPO_OWNER}/TrinityCore/releases
