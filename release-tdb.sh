@@ -122,9 +122,11 @@ cd bin/check_install/bin
 cd ../../..
 
 # 12. update db setting ARCHIVED
-mysql -uroot -D auth -e "update \`updates\` set \`state\`='ARCHIVED';"
-mysql -uroot -D characters -e "update \`updates\` set \`state\`='ARCHIVED';"
-mysql -uroot -D world -e "update \`updates\` set \`state\`='ARCHIVED';"
+mysql -uroot -D auth -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=0;"
+mysql -uroot -D characters -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=0;"
+mysql -uroot -D world -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=0;"
+# 12.b reset worldstates in characters db
+mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
 
 # 13. update base dbs sql
 mysqldump -uroot auth --default-character-set='utf8' --result-file sql/base/auth_database.sql
