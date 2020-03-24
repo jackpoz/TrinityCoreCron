@@ -149,10 +149,10 @@ mysqldump -uroot world --default-character-set='utf8' --result-file $NEW_TDB_FIL
 # 15. 7zip the world db sql file
 7z a $NEW_TDB_FILE.7z $NEW_TDB_FILE.sql
 
-# 16. update revision_data.h.in.cmake with new TDB file name
+# 16. update cmake/genrev.cmake with new TDB file name
 cd ..
-sed -i -e 's$ #define _FULL_DATABASE             "[A-Za-z0-9$_.]*"$ #define _FULL_DATABASE             "'$NEW_TDB_FILE'.sql"$g' revision_data.h.in.cmake
-git add revision_data.h.in.cmake
+sed -i -e 's$set(rev_database_date "[A-Za-z0-9$_.]*")$set(rev_database_date "'$TODAY'")$g' cmake/genrev.cmake
+git add cmake/options.cmake
 # 17. commit and push
 git commit -m "$NEW_TDB_NAME - "`date +%Y/%m/%d`
 git push $PUSH_URL >/dev/null 2>&1
