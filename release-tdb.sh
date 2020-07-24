@@ -129,37 +129,53 @@ mysql -uroot -D world -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=
 mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
 
 # 13. update base dbs sql
-mysqldump -uroot auth --default-character-set='utf8' --result-file sql/base/auth_database.sql
+mysqldump -uroot auth --default-character-set='utf8' --routines --result-file sql/base/auth_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/auth_database.sql
 sed -i -e 's$),($),\n($g' sql/base/auth_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/auth_database.sql
-mysqldump -uroot characters --default-character-set='utf8' --result-file sql/base/characters_database.sql
+mysqldump -uroot characters --default-character-set='utf8' --routines --result-file sql/base/characters_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
-mysqldump -uroot world --default-character-set='utf8' --no-data --result-file sql/base/dev/world_database.sql
+mysqldump -uroot world --default-character-set='utf8' --routines --no-data --result-file sql/base/dev/world_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/world_database.sql
 git add sql
 
 # 14. dump world db to sql
 mkdir tdb
 cd tdb
-mysqldump -uroot world --default-character-set='utf8' --result-file $NEW_TDB_FILE.sql
+mysqldump -uroot world --default-character-set='utf8' --routines --result-file $NEW_TDB_FILE.sql
 
 # 15. 7zip the world db sql file
 7z a $NEW_TDB_FILE.7z $NEW_TDB_FILE.sql
 
-# 16. update revision_data.h.in.cmake with new TDB file name
+# 16. recreate the dbs to test sql base files import
 cd ..
+mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/create_mysql.sql
+
+# 17. test sql base files import
+mysql -uroot -D auth < sql/base/auth_database.sql
+mysql -uroot -D characters < sql/base/characters_database.sql
+mysql -uroot -D world < sql/base/dev/world_database.sql
+
+# 18. recreate the dbs to test TDB import
+mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/create_mysql.sql
+
+# 19. test TDB import
+mysql -uroot -D world < tdb/$NEW_TDB_FILE.sql
+
+# 20. update revision_data.h.in.cmake with new TDB file name
 sed -i -e 's$ #define _FULL_DATABASE             "[A-Za-z0-9$_.]*"$ #define _FULL_DATABASE             "'$NEW_TDB_FILE'.sql"$g' revision_data.h.in.cmake
 git add revision_data.h.in.cmake
-# 17. commit and push
+# 21. commit and push
 git commit -m "$NEW_TDB_NAME - "`date +%Y/%m/%d`
 git push $PUSH_URL >/dev/null 2>&1
-# 18. create a tag and push
+# 22. create a tag and push
 git tag $NEW_TDB_TAG
 git push $PUSH_URL $NEW_TDB_TAG >/dev/null 2>&1
-# 19. create a GitHub release
+# 23. create a GitHub release
 cd tdb
 NEW_RELEASE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -d '{"tag_name":"'"$NEW_TDB_TAG"'","target_commitish":"3.3.5","name":"'"$NEW_TDB_NAME"'","body":"### ![3.3.5](https://img.shields.io/badge/branch-3.3.5-yellow.svg)\n'"$NEW_TDB_RELEASE_NOTES"'\n","draft":true,"prerelease":false}' $GITHUB_API)
 echo $NEW_RELEASE_RESPONSE
