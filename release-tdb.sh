@@ -183,6 +183,8 @@ mkdir tdb
 cd tdb
 mysqldump -uroot world --default-character-set='utf8mb4' --routines --result-file $NEW_TDB_WORLD_FILE.sql
 mysqldump -uroot hotfixes --default-character-set='utf8mb4' --routines --result-file $NEW_TDB_HOTFIXES_FILE.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' $NEW_TDB_WORLD_FILE.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' $NEW_TDB_HOTFIXES_FILE.sql
 
 # 15. 7zip the world db sql file
 7z a $NEW_TDB_FILE.7z $NEW_TDB_WORLD_FILE.sql $NEW_TDB_HOTFIXES_FILE.sql
