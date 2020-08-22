@@ -145,6 +145,7 @@ git add sql
 mkdir tdb
 cd tdb
 mysqldump -uroot world --default-character-set='utf8' --routines --result-file $NEW_TDB_FILE.sql
+sed -i -e 's/DEFINER=[^*]*\*/\*/' $NEW_TDB_FILE.sql
 
 # 15. 7zip the world db sql file
 7z a $NEW_TDB_FILE.7z $NEW_TDB_FILE.sql
