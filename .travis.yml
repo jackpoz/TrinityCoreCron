@@ -19,7 +19,7 @@ addons:
       - zlib1g-dev
       - libbz2-dev
       - p7zip-full
-      - g++-6
+      - g++-8
 
 services:
   - mysql
