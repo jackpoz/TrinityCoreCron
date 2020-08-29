@@ -2,6 +2,9 @@ name: 3.3.5 SonarCloud
 
 on: 
   workflow_dispatch:
+  push:
+    branches:
+      - 3.3.5-SonarCloud
 
 env:
   REPO_URL: https://github.com/TrinityCore/TrinityCore.git
