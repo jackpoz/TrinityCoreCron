@@ -10,17 +10,12 @@ on:
 env:
   SONAR_SCANNER_VERSION: 4.4.0.2170
   SONAR_SCANNER_HOME: SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-  PATH: $PATH:$HOME/.sonar/build-wrapper-linux-x86:$SONAR_SCANNER_HOME/bin
   SONAR_SCANNER_OPTS: -server
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - name: Debug
-      run: |
-        echo "HOME=${HOME}"
-        echo "PATH=${PATH}"
     - uses: actions/checkout@v2
       with:
         repository: TrinityCore/TrinityCore
@@ -33,8 +28,10 @@ jobs:
       run: |
         curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip 
         unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+        echo "::add-path::$HOME/.sonar/build-wrapper-linux-x86"
         curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
         unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+        echo "::add-path::$SONAR_SCANNER_HOME/bin"
     - name: Setup
       run: |
         mkdir bin
