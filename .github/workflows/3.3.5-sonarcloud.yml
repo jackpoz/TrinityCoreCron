@@ -9,7 +9,6 @@ on:
 
 env:
   SONAR_SCANNER_VERSION: 4.4.0.2170
-  SONAR_SCANNER_HOME: SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
   SONAR_SCANNER_OPTS: -server
 
 jobs:
@@ -26,12 +25,16 @@ jobs:
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev
     - name: SonarCloud Setup
       run: |
+        curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+        unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/        
+        echo "::add-path::$HOME/.sonar/build-wrapper-linux-x86"
         curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip 
         unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-        echo "::add-path::$HOME/.sonar/build-wrapper-linux-x86"
-        curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-        unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-        echo "::add-path::$SONAR_SCANNER_HOME/bin"
+        echo "::add-path::$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin"
+    - name: SonarCloud Debug
+      run: |
+        sonar-scanner --version
+        build-wrapper-linux-x86-64 --version
     - name: Setup
       run: |
         mkdir bin
@@ -43,10 +46,9 @@ jobs:
         build-wrapper-linux-x86-64 --out-dir bw-output make -j 4 -k && make install
     - name: SonarCloud Analysis
       run: |
-        cd bin
         sonar-scanner \
           -Dsonar.organization=jackpoz-github \
           -Dsonar.projectKey=jackpoz_TrinityCore \
           -Dsonar.sources=. \
-          -Dsonar.cfamily.build-wrapper-output=bw-output \
+          -Dsonar.cfamily.build-wrapper-output=bin/bw-output \
           -Dsonar.host.url=https://sonarcloud.io
