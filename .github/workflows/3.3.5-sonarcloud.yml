@@ -2,18 +2,20 @@ name: 3.3.5 SonarCloud
 
 on: 
   workflow_dispatch:
+    inputs:
   push:
     branches:
       - 3.3.5-SonarCloud
-
-env:
-  REPO_URL: https://github.com/TrinityCore/TrinityCore.git
-  REPO_BRANCH: 3.3.5
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: TrinityCore/TrinityCore
+        ref: 3.3.5
+        fetch-depth: 0
     - name: Dependencies
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev
@@ -28,17 +30,11 @@ jobs:
         curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
         unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
         export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
-    - name: Sources checkout
-      run: |
-        git clone --branch=$REPO_BRANCH $REPO_URL sources
-        cd sources
-        git config user.email "sonarcloud@build.bot" && git config user.name "SonarCloud"
     - name: Setup
       run: |
         mkdir bin
         cd bin
         cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=0 -DUSE_SCRIPTPCH=0 -DTOOLS=1 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_CXX_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_INSTALL_PREFIX=check_install -DBUILD_TESTING=1
-        cd ..
     - name: Build
       run: |
         cd bin
