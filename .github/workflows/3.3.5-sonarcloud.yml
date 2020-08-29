@@ -10,7 +10,7 @@ on:
 env:
   SONAR_SCANNER_VERSION: 4.4.0.2170
   SONAR_SCANNER_HOME: SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-  PATH: $HOME/.sonar/build-wrapper-linux-x86:$SONAR_SCANNER_HOME/bin:$PATH
+  PATH: $PATH:$HOME/.sonar/build-wrapper-linux-x86:$SONAR_SCANNER_HOME/bin
   SONAR_SCANNER_OPTS: -server
 
 jobs:
