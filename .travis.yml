@@ -30,7 +30,7 @@ env:
   - BRANCH=3.3.5-cfbg BASE_BRANCH=3.3.5-base_patch
 
 before_install:
-  - git clone --depth=100 --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
+  - git clone --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
   - cd server
   - git status
   - |
@@ -40,7 +40,7 @@ before_install:
       git remote add BaseRemote https://github.com/TrinityCore/TrinityCore.git
       export BASE_BRANCH=3.3.5
     fi
-  - git fetch --depth=100 BaseRemote ${BASE_BRANCH}
+  - git fetch BaseRemote ${BASE_BRANCH}
   - git merge -m "Merge ${BASE_BRANCH} to ${BRANCH}" BaseRemote/${BASE_BRANCH}
   - git submodule update --init --recursive
   - git status
