@@ -45,7 +45,6 @@ before_install:
   - git submodule update --init --recursive
   - git status
   - git config user.email "travis@build.bot" && git config user.name "Travis CI"
-  - git tag -a -m "Travis build" init
 
 install:
   - mysql -uroot -e 'create database test_mysql;'
