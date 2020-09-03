@@ -23,7 +23,6 @@ services:
 env:
   - BRANCH=3.3.5
   - BRANCH=3.3.5-base_patch
-  - BRANCH=3.3.5-custom_links
   - BRANCH=3.3.5-passive_anticheat BASE_BRANCH=3.3.5-base_patch
   - BRANCH=3.3.5-pvpranks BASE_BRANCH=3.3.5-base_patch
   - BRANCH=3.3.5-tele_npc_3 BASE_BRANCH=3.3.5-base_patch
