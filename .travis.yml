@@ -71,4 +71,4 @@ script:
   - ./worldserver --version
 
 after_success:
-  - git push https://${GITHUB_TOKEN}@github.com/TrinityCore/TrinityCoreCustomChanges.git HEAD:${BRANCH} >/dev/null 2>&1
+  - git push https://${GITHUB_TOKEN}@github.com/TrinityCore/TrinityCoreCustomChanges.git HEAD:${BRANCH}
