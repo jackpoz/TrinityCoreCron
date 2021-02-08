@@ -30,6 +30,7 @@ env:
   - BRANCH=3.3.5-lfgsolo
   - BRANCH=3.3.5-vas-autobalance
   - BRANCH=3.3.5-solocraft
+  - BRANCH=3.3.5-skip-dk
 
 before_install:
   - git clone --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
