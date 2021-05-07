@@ -56,9 +56,13 @@ wget $OLD_TDB_URL -q -O TDB.7z
 7z e TDB.7z
 
 #  8. set new TDB name and sql name
-NEW_TDB_VERSION=`date +%y%m1`
+NEW_TDB_VERSION_YEAR=`date +%y`
+NEW_TDB_VERSION_MONTH=`date +%m`
+NEW_TDB_VERSION_PATCH="1"
+NEW_TDB_VERSION=$NEW_TDB_VERSION_YEAR$NEW_TDB_VERSION_MONTH$NEW_TDB_VERSION_PATCH
 if [ $NEW_TDB_VERSION == $OLD_TDB_VERSION ]; then
   NEW_TDB_VERSION=$((NEW_TDB_VERSION + 1))
+  NEW_TDB_VERSION_PATCH=$((NEW_TDB_VERSION_PATCH + 1))
 fi
 TODAY=`date +%Y_%m_%d`
 NEW_TDB_TAG='TDB335.'$NEW_TDB_VERSION
@@ -170,13 +174,22 @@ mysql -uroot -D world < tdb/$NEW_TDB_FILE.sql
 # 20. update revision_data.h.in.cmake with new TDB file name
 sed -i -e 's$ #define _FULL_DATABASE             "[A-Za-z0-9$_.]*"$ #define _FULL_DATABASE             "'$NEW_TDB_FILE'.sql"$g' revision_data.h.in.cmake
 git add revision_data.h.in.cmake
-# 21. commit and push
+# 21. update cmake/package.cmake with new TDB versions
+if [ -f "cmake/package.cmake" ]; then
+  sed -i -e 's$set(DATABASE_NAME "[A-Za-z0-9$_.]*")$set(DATABASE_NAME "'$NEW_TDB_FILE'")$g' cmake/package.cmake
+  sed -i -e 's$set(DATABASE_TAG "[A-Za-z0-9$_.]*")$set(DATABASE_TAG "'$NEW_TDB_TAG'")$g' cmake/package.cmake
+  sed -i -e 's$set(VERSION_MAJOR "[A-Za-z0-9$_.]*")$set(VERSION_MAJOR "'$NEW_TDB_VERSION_YEAR'")$g' cmake/package.cmake
+  sed -i -e 's$set(VERSION_MINOR "[A-Za-z0-9$_.]*")$set(VERSION_MINOR "'$NEW_TDB_VERSION_MONTH'")$g' cmake/package.cmake
+  sed -i -e 's$set(VERSION_PATCH "[A-Za-z0-9$_.]*")$set(VERSION_PATCH "'$NEW_TDB_VERSION_PATCH'")$g' cmake/package.cmake
+  git add cmake/package.cmake
+fi
+# 22. commit and push
 git commit -m "$NEW_TDB_NAME - "`date +%Y/%m/%d`
 git push $PUSH_URL >/dev/null 2>&1
-# 22. create a tag and push
+# 23. create a tag and push
 git tag $NEW_TDB_TAG
 git push $PUSH_URL $NEW_TDB_TAG >/dev/null 2>&1
-# 23. create a GitHub release
+# 24. create a GitHub release
 cd tdb
 NEW_RELEASE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -d '{"tag_name":"'"$NEW_TDB_TAG"'","target_commitish":"3.3.5","name":"'"$NEW_TDB_NAME"'","body":"### ![3.3.5](https://img.shields.io/badge/branch-3.3.5-yellow.svg)\n'"$NEW_TDB_RELEASE_NOTES"'\n","draft":true,"prerelease":false}' $GITHUB_API)
 echo $NEW_RELEASE_RESPONSE
