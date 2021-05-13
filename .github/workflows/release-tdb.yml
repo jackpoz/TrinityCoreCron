@@ -9,11 +9,28 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - name: MySQL 5.7
+      run: |
+        sudo rm /etc/apparmor.d/usr.sbin.mysqld
+        sudo service apparmor reload
+        sudo apt-get remove mysql-server mysql-client mysql-common && sudo apt-get autoremove
+        sudo rm -f -r /var/lib/mysql
+
+        wget http://repo.mysql.com/mysql-apt-config_0.8.16-1_all.deb \
+          && echo mysql-apt-config    mysql-apt-config/repo-codename  select  bionic | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/repo-distro    select  ubuntu | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-server  select  mysql-5.7 | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-product select  Ok | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/unsupported-platform   select  abort | sudo debconf-set-selections \
+          && sudo dpkg -i mysql-apt-config_0.8.16-1_all.deb \
+          && sudo apt-get update && sudo apt-get install -y mysql-client=5.7.*-1ubuntu18.04 mysql-server=5.7.*-1ubuntu18.04 libmysqlclient-dev
+
+        sudo systemctl start mysql.service
+        sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
     - name: Dependencies
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
-        sudo systemctl start mysql.service
     - name: Run release script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

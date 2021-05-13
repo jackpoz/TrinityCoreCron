@@ -21,7 +21,6 @@ git config user.email "tdb-release@build.bot" && git config user.name "TDB Relea
 git status
 
 #  4. setup the test db and check sql updates
-mysql -uroot -proot -e "SET PASSWORD FOR root@localhost='';"
 mysql -uroot -e 'create database test_mysql;'
 mysql -uroot < sql/create/create_mysql.sql
 chmod +x contrib/check_updates.sh
@@ -31,7 +30,7 @@ mysql -utrinity -ptrinity characters < sql/base/characters_database.sql
 ./contrib/check_updates.sh characters 3.3.5 characters localhost
 mysql -utrinity -ptrinity world < sql/base/dev/world_database.sql
 cat sql/updates/world/3.3.5/*.sql | mysql -utrinity -ptrinity world
-mysql -uroot < sql/create/drop_mysql_8.sql
+mysql -uroot < sql/create/drop_mysql.sql
 
 #  5. re-create the db to be used later
 mysql -uroot < sql/create/create_mysql.sql
@@ -153,7 +152,7 @@ sed -i -e 's/DEFINER=[^*]*\*/\*/' $NEW_TDB_FILE.sql
 
 # 16. recreate the dbs to test sql base files import
 cd ..
-mysql -uroot < sql/create/drop_mysql_8.sql
+mysql -uroot < sql/create/drop_mysql.sql
 mysql -uroot < sql/create/create_mysql.sql
 
 # 17. test sql base files import
@@ -162,7 +161,7 @@ mysql -uroot -D characters < sql/base/characters_database.sql
 mysql -uroot -D world < sql/base/dev/world_database.sql
 
 # 18. recreate the dbs to test TDB import
-mysql -uroot < sql/create/drop_mysql_8.sql
+mysql -uroot < sql/create/drop_mysql.sql
 mysql -uroot < sql/create/create_mysql.sql
 
 # 19. test TDB import
