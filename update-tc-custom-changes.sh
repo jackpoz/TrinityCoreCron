@@ -28,7 +28,7 @@ cd ..
 chmod +x contrib/check_updates.sh
 
 # script
-$CXX --version
+c++ --version
 mysql -uroot < sql/create/create_mysql.sql
 mysql -utrinity -ptrinity auth < sql/base/auth_database.sql
 ./contrib/check_updates.sh auth 3.3.5 auth localhost
