@@ -4,9 +4,9 @@
 set -e
 
 # before install
-git config user.email "github.actions@build.bot" && git config user.name "Github Actions"
 git clone --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
 cd server
+git config user.email "github.actions@build.bot" && git config user.name "Github Actions"
 git status
 if [ -n "$BASE_BRANCH" ]; then
   git remote add BaseRemote https://github.com/TrinityCore/TrinityCoreCustomChanges.git
