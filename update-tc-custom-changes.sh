@@ -4,6 +4,7 @@
 set -e
 
 # before install
+git config user.email "github.actions@build.bot" && git config user.name "Github Actions"
 git clone --branch=${BRANCH} https://github.com/TrinityCore/TrinityCoreCustomChanges.git server
 cd server
 git status
@@ -17,7 +18,6 @@ git fetch BaseRemote ${BASE_BRANCH}
 git merge -m "Merge ${BASE_BRANCH} to ${BRANCH}" BaseRemote/${BASE_BRANCH}
 git submodule update --init --recursive
 git status
-git config user.email "github.actions@build.bot" && git config user.name "Github Actions"
 
 # install
 mysql -uroot -e 'create database test_mysql;'
