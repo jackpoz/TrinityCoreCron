@@ -12,22 +12,22 @@ jobs:
       max-parallel: 1
       matrix:
         include:
-          - BRANCH=3.3.5
-          - BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-passive_anticheat
-            BASE_BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-pvpranks
-            BASE_BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-tele_npc_3
-            BASE_BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-cfbg
-            BASE_BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-racial-trait
-            BASE_BRANCH=3.3.5-base_patch
-          - BRANCH=3.3.5-lfgsolo
-          - BRANCH=3.3.5-vas-autobalance
-          - BRANCH=3.3.5-solocraft
-          - BRANCH=3.3.5-skip-dk
+          - BRANCH: 3.3.5
+          - BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-passive_anticheat
+            BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-pvpranks
+            BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-tele_npc_3
+            BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-cfbg
+            BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-racial-trait
+            BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-lfgsolo
+          - BRANCH: 3.3.5-vas-autobalance
+          - BRANCH: 3.3.5-solocraft
+          - BRANCH: 3.3.5-skip-dk
     steps:
     - uses: actions/checkout@v2
     - name: MySQL 5.7
