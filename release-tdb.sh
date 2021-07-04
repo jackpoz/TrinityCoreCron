@@ -51,7 +51,6 @@ cp ../etc/worldserver.conf.dist ../etc/worldserver.conf
 #  7. download latest TDB
 OLD_TDB_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/TrinityCore/TrinityCore/releases)
 OLD_TDB=$(echo $OLD_TDB_RESPONSE | jq 'map(select(.tag_name|startswith("TDB335")|not)) | sort_by(.created_at) | reverse | .[0]')
-ARCHIVE_FOLDER=$(echo $OLD_TDB | jq -r '.tag_name | split(".")[0] | split("TDB")[1]' | sed 's/..$//')
 OLD_TDB_VERSION=$(echo $OLD_TDB | jq -r '.tag_name | split(".")[1]')
 OLD_TDB_FOLDER=$OLD_TDB_VERSION'_'`date +%Y_%m_%d`
 OLD_TDB_URL=$( echo $OLD_TDB | jq -r '.assets | map(select(.name|endswith("7z"))) | .[0].browser_download_url')
@@ -80,21 +79,21 @@ NEW_TDB_HOTFIXES_FILE='TDB_full_hotfixes_'$NEW_WOW_PATCH'.'$NEW_TDB_VERSION'_'$T
 NEW_TDB_RELEASE_NOTES='Release '${NEW_TDB_VERSION: -1}' of '`date +%Y/%m`
 
 # 10. move all sql (excluding needed TDB Release sqls)  update scripts to old
-mkdir -p sql/old/$ARCHIVE_FOLDER.x/auth/$OLD_TDB_FOLDER && mv sql/updates/auth/master/* sql/old/$ARCHIVE_FOLDER.x/auth/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$ARCHIVE_FOLDER.x/characters/$OLD_TDB_FOLDER && mv sql/updates/characters/master/* sql/old/$ARCHIVE_FOLDER.x/characters/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$ARCHIVE_FOLDER.x/world/$OLD_TDB_FOLDER && mv sql/updates/world/master/* sql/old/$ARCHIVE_FOLDER.x/world/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$ARCHIVE_FOLDER.x/hotfixes/$OLD_TDB_FOLDER && mv sql/updates/hotfixes/master/* sql/old/$ARCHIVE_FOLDER.x/hotfixes/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.x/auth/$OLD_TDB_FOLDER && mv sql/updates/auth/master/* sql/old/$MAJOR_VERSION.x/auth/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.x/characters/$OLD_TDB_FOLDER && mv sql/updates/characters/master/* sql/old/$MAJOR_VERSION.x/characters/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.x/world/$OLD_TDB_FOLDER && mv sql/updates/world/master/* sql/old/$MAJOR_VERSION.x/world/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER && mv sql/updates/hotfixes/master/* sql/old/$MAJOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER/
 # 10.1 update db updates_include
-mysql -uroot -D auth -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$ARCHIVE_FOLDER.x/auth', 'ARCHIVED');"
-mysql -uroot -D characters -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$ARCHIVE_FOLDER.x/characters', 'ARCHIVED');"
-mysql -uroot -D world -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$ARCHIVE_FOLDER.x/world', 'ARCHIVED');"
-mysql -uroot -D hotfixes -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$ARCHIVE_FOLDER.x/hotfixes', 'ARCHIVED');"
+mysql -uroot -D auth -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/auth', 'ARCHIVED');"
+mysql -uroot -D characters -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/characters', 'ARCHIVED');"
+mysql -uroot -D world -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/world', 'ARCHIVED');"
+mysql -uroot -D hotfixes -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/hotfixes', 'ARCHIVED');"
 
 # 11. add the first sql update (making sure there isn't already a SQL file with the same name)
 # 11.1 auth db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$ARCHIVE_FOLDER".x/auth/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/auth/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
     cat > sql/updates/auth/master/$TODAY\_$(printf "%02d" $counter)_auth.sql <<EOL
@@ -108,7 +107,7 @@ done
 # 11.2 characters db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$ARCHIVE_FOLDER".x/characters/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/characters/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
     cat > sql/updates/characters/master/$TODAY\_$(printf "%02d" $counter)_characters.sql <<EOL
@@ -122,7 +121,7 @@ done
 # 11.3 world db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$ARCHIVE_FOLDER".x/world/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/world/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
     cat > sql/updates/world/master/$TODAY\_$(printf "%02d" $counter)_world.sql <<EOL
@@ -138,7 +137,7 @@ git add sql
 # 11.4 hotfixes db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$ARCHIVE_FOLDER".x/hotfixes/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/hotfixes/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
     cat > sql/updates/hotfixes/master/$TODAY\_$(printf "%02d" $counter)_hotfixes.sql <<EOL
