@@ -29,6 +29,7 @@ jobs:
           - BRANCH: 3.3.5-vas-autobalance
           - BRANCH: 3.3.5-solocraft
           - BRANCH: 3.3.5-skip-dk
+          - BRANCH: 3.3.5-1vs1
     steps:
     - uses: actions/checkout@v2
     - name: MySQL 5.7
