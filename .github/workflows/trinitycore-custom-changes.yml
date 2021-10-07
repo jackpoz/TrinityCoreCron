@@ -25,6 +25,8 @@ jobs:
             BASE_BRANCH: 3.3.5-base_patch
           - BRANCH: 3.3.5-racial-trait
             BASE_BRANCH: 3.3.5-base_patch
+          - BRANCH: 3.3.5-aoe-loot-mail-excess            
+            BASE_BRANCH: 3.3.5-base_patch
           - BRANCH: 3.3.5-lfgsolo
           - BRANCH: 3.3.5-vas-autobalance
           - BRANCH: 3.3.5-solocraft
