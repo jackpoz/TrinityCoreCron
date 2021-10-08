@@ -4,34 +4,91 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
-
 jobs:
-  build:
+  tier0:
+    name: 3.3.5 branch
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: MySQL 5.7
+      run: |
+        sudo rm /etc/apparmor.d/usr.sbin.mysqld
+        sudo service apparmor reload
+        sudo apt-get remove mysql-server mysql-client mysql-common && sudo apt-get autoremove
+        sudo rm -f -r /var/lib/mysql
+        wget http://repo.mysql.com/mysql-apt-config_0.8.16-1_all.deb \
+          && echo mysql-apt-config    mysql-apt-config/repo-codename  select  bionic | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/repo-distro    select  ubuntu | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-server  select  mysql-5.7 | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-product select  Ok | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/unsupported-platform   select  abort | sudo debconf-set-selections \
+          && sudo dpkg -i mysql-apt-config_0.8.16-1_all.deb \
+          && sudo apt-get update && sudo apt-get install -y mysql-client=5.7.*-1ubuntu18.04 mysql-server=5.7.*-1ubuntu18.04 libmysqlclient-dev
+        sudo systemctl start mysql.service
+        sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
+    - name: Dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+    - name: Run release script
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        BRANCH: 3.3.5
+      run: |
+        rm -rf .git
+        chmod +x update-tc-custom-changes.sh
+        ./update-tc-custom-changes.sh
+
+  tier1:
+    name: ${{ matrix.BRANCH }} (needs 3.3.5)
+    needs: tier0
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
-        include:
-          - BRANCH: 3.3.5
-          - BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-passive_anticheat
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-pvpranks
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-tele_npc_3
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-cfbg
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-racial-trait
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-aoe-loot-mail-excess            
-            BASE_BRANCH: 3.3.5-base_patch
-          - BRANCH: 3.3.5-lfgsolo
-          - BRANCH: 3.3.5-vas-autobalance
-          - BRANCH: 3.3.5-solocraft
-          - BRANCH: 3.3.5-skip-dk
-          - BRANCH: 3.3.5-1vs1
+        BRANCH: [3.3.5-base_patch, 3.3.5-lfgsolo, 3.3.5-vas-autobalance, 3.3.5-solocraft, 3.3.5-skip-dk, 3.3.5-1vs1]      
+
+    steps:
+    - uses: actions/checkout@v2  
+    - name: MySQL 5.7
+      run: |
+        sudo rm /etc/apparmor.d/usr.sbin.mysqld
+        sudo service apparmor reload
+        sudo apt-get remove mysql-server mysql-client mysql-common && sudo apt-get autoremove
+        sudo rm -f -r /var/lib/mysql
+        wget http://repo.mysql.com/mysql-apt-config_0.8.16-1_all.deb \
+          && echo mysql-apt-config    mysql-apt-config/repo-codename  select  bionic | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/repo-distro    select  ubuntu | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-server  select  mysql-5.7 | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/select-product select  Ok | sudo debconf-set-selections \
+          && echo mysql-apt-config    mysql-apt-config/unsupported-platform   select  abort | sudo debconf-set-selections \
+          && sudo dpkg -i mysql-apt-config_0.8.16-1_all.deb \
+          && sudo apt-get update && sudo apt-get install -y mysql-client=5.7.*-1ubuntu18.04 mysql-server=5.7.*-1ubuntu18.04 libmysqlclient-dev
+        sudo systemctl start mysql.service
+        sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
+    - name: Dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+    - name: Run release script
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        BRANCH: ${{ matrix.BRANCH }}
+      run: |
+        rm -rf .git
+        chmod +x update-tc-custom-changes.sh
+        ./update-tc-custom-changes.sh
+
+  tier2:
+    name: ${{ matrix.BRANCH }} (needs 3.3.5-base_patch)
+    needs: tier1
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        BRANCH: [3.3.5-passive_anticheat, 3.3.5-pvpranks, 3.3.5-tele_npc_3, 3.3.5-cfbg, 3.3.5-racial-trait, 3.3.5-aoe-loot-mail-excess]
+
     steps:
     - uses: actions/checkout@v2
     - name: MySQL 5.7
@@ -58,7 +115,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         BRANCH: ${{ matrix.BRANCH }}
-        BASE_BRANCH: ${{ matrix.BASE_BRANCH }}
+        BASE_BRANCH: 3.3.5-base_patch
       run: |
         rm -rf .git
         chmod +x update-tc-custom-changes.sh
