@@ -21,6 +21,7 @@ git config user.email "tdb-release@build.bot" && git config user.name "TDB Relea
 git status
 
 #  4. setup the test db and check sql updates
+mysql -uroot -proot -e "SET PASSWORD FOR root@localhost='';"
 mysql -uroot -e 'create database test_mysql;'
 mysql -uroot < sql/create/create_mysql.sql
 chmod +x contrib/check_updates.sh
@@ -32,7 +33,7 @@ mysql -utrinity -ptrinity world < sql/base/dev/world_database.sql
 mysql -utrinity -ptrinity hotfixes < sql/base/dev/hotfixes_database.sql
 cat sql/updates/world/master/*.sql | mysql -utrinity -ptrinity world
 cat sql/updates/hotfixes/master/*.sql | mysql -utrinity -ptrinity hotfixes
-mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/drop_mysql_8.sql
 
 #  5. re-create the db to be used later
 mysql -uroot < sql/create/create_mysql.sql
@@ -168,14 +169,18 @@ mysqldump -uroot auth --default-character-set='utf8' --routines --result-file sq
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/auth_database.sql
 sed -i -e 's$),($),\n($g' sql/base/auth_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/auth_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
 mysqldump -uroot characters --default-character-set='utf8' --routines --result-file sql/base/characters_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
 mysqldump -uroot world --default-character-set='utf8mb4' --routines --no-data --result-file sql/base/dev/world_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/world_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
 mysqldump -uroot hotfixes --default-character-set='utf8mb4' --routines --no-data --result-file sql/base/dev/hotfixes_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/hotfixes_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/dev/hotfixes_database.sql
 git add sql
 
 # 14. dump world db to sql
@@ -191,7 +196,7 @@ sed -i -e 's/DEFINER=[^*]*\*/\*/' $NEW_TDB_HOTFIXES_FILE.sql
 
 # 16. recreate the dbs to test sql base files import
 cd ..
-mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/drop_mysql_8.sql
 mysql -uroot < sql/create/create_mysql.sql
 
 # 17. test sql base files import
@@ -201,7 +206,7 @@ mysql -uroot -D world < sql/base/dev/world_database.sql
 mysql -uroot -D hotfixes < sql/base/dev/hotfixes_database.sql
 
 # 18. recreate the dbs to test TDB import
-mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/drop_mysql_8.sql
 mysql -uroot < sql/create/create_mysql.sql
 
 # 19. test TDB import
