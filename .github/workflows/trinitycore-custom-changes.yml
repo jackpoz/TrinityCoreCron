@@ -15,6 +15,7 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+        sudo systemctl start mysql.service
     - name: Run release script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -39,6 +40,7 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+        sudo systemctl start mysql.service
     - name: Run release script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -63,6 +65,7 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-8 p7zip-full
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+        sudo systemctl start mysql.service
     - name: Run release script
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
