@@ -20,6 +20,7 @@ git submodule update --init --recursive
 git status
 
 # install
+mysql -uroot -proot -e "SET PASSWORD FOR root@localhost='';"
 mysql -uroot -e 'create database test_mysql;'
 mkdir bin
 cd bin
@@ -36,7 +37,7 @@ mysql -utrinity -ptrinity characters < sql/base/characters_database.sql
 ./contrib/check_updates.sh characters 3.3.5 characters localhost
 mysql -utrinity -ptrinity world < sql/base/dev/world_database.sql
 cat sql/updates/world/3.3.5/*.sql | mysql -utrinity -ptrinity world
-mysql -uroot < sql/create/drop_mysql.sql
+mysql -uroot < sql/create/drop_mysql_8.sql
 cd bin
 make -j 4 -k && make install
 cd check_install/bin
