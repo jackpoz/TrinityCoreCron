@@ -165,12 +165,12 @@ mysql -uroot -D hotfixes -e "update \`updates\` set \`state\`='ARCHIVED',\`speed
 mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
 
 # 13. update base dbs sql
-mysqldump -uroot auth --default-character-set='utf8' --routines --result-file sql/base/auth_database.sql
+mysqldump -uroot auth --default-character-set='utf8mb4' --routines --result-file sql/base/auth_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/auth_database.sql
 sed -i -e 's$),($),\n($g' sql/base/auth_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/auth_database.sql
 # sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
-mysqldump -uroot characters --default-character-set='utf8' --routines --result-file sql/base/characters_database.sql
+mysqldump -uroot characters --default-character-set='utf8mb4' --routines --result-file sql/base/characters_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
