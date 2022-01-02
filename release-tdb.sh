@@ -139,10 +139,10 @@ mysqldump -uroot characters --default-character-set='utf8' --routines --result-f
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
-sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/characters_database.sql
 mysqldump -uroot world --default-character-set='utf8' --routines --no-data --result-file sql/base/dev/world_database.sql
 sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/world_database.sql
-sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
+sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/world_database.sql
 git add sql
 
 # 14. dump world db to sql
