@@ -162,7 +162,7 @@ mysql -uroot -D characters -e "update \`updates\` set \`state\`='ARCHIVED',\`spe
 mysql -uroot -D world -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=0;"
 mysql -uroot -D hotfixes -e "update \`updates\` set \`state\`='ARCHIVED',\`speed\`=0;"
 # 12.b reset worldstates in characters db
-mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
+# mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
 
 # 13. update base dbs sql
 mysqldump -uroot auth --default-character-set='utf8mb4' --routines --result-file sql/base/auth_database.sql
