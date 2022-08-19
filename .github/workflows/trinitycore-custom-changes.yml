@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        BRANCH: [3.3.5-passive_anticheat, 3.3.5-pvpranks, 3.3.5-tele_npc_3, 3.3.5-cfbg, 3.3.5-racial-trait, 3.3.5-aoe-loot-mail-excess]
+        BRANCH: [3.3.5-passive_anticheat, 3.3.5-pvpranks, 3.3.5-tele_npc_3, 3.3.5-cfbg, 3.3.5-racial-trait, 3.3.5-aoe-loot-mail-excess, 3.3.5-paymaster]
 
     steps:
     - uses: actions/checkout@v2
