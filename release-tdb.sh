@@ -6,7 +6,7 @@
 
 #  1. environmental variables
 #GITHUB_TOKEN=
-REPO_OWNER=TrinityCore
+REPO_OWNER=funjoker
 REPO_URL=https://github.com/${REPO_OWNER}/TrinityCore.git
 PUSH_URL=https://${GITHUB_TOKEN}@github.com/${REPO_OWNER}/TrinityCore.git
 GITHUB_API=https://api.github.com/repos/${REPO_OWNER}/TrinityCore/releases
@@ -15,7 +15,7 @@ GITHUB_API=https://api.github.com/repos/${REPO_OWNER}/TrinityCore/releases
 set -e
 
 ##  3. clone the repo
-git clone --branch=master $REPO_URL server
+git clone --branch=wotlk_classic $REPO_URL server
 cd server
 git config user.email "tdb-release@build.bot" && git config user.name "TDB Release"
 git status
@@ -26,13 +26,13 @@ mysql -uroot -e 'create database test_mysql;'
 mysql -uroot < sql/create/create_mysql.sql
 chmod +x contrib/check_updates.sh
 mysql -utrinity -ptrinity auth < sql/base/auth_database.sql
-./contrib/check_updates.sh auth master auth localhost
+./contrib/check_updates.sh auth wotlk_classic auth localhost
 mysql -utrinity -ptrinity characters < sql/base/characters_database.sql
-./contrib/check_updates.sh characters master characters localhost
+./contrib/check_updates.sh characters wotlk_classic characters localhost
 mysql -utrinity -ptrinity world < sql/base/dev/world_database.sql
 mysql -utrinity -ptrinity hotfixes < sql/base/dev/hotfixes_database.sql
-cat sql/updates/world/master/*.sql | mysql -utrinity -ptrinity world
-cat sql/updates/hotfixes/master/*.sql | mysql -utrinity -ptrinity hotfixes
+cat sql/updates/world/wotlk_classic/*.sql | mysql -utrinity -ptrinity world
+cat sql/updates/hotfixes/wotlk_classic/*.sql | mysql -utrinity -ptrinity hotfixes
 mysql -uroot < sql/create/drop_mysql_8.sql
 
 #  5. re-create the db to be used later
@@ -50,8 +50,8 @@ cd check_install/bin
 cp ../etc/worldserver.conf.dist ../etc/worldserver.conf
 
 #  7. download latest TDB
-OLD_TDB_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/TrinityCore/TrinityCore/releases)
-OLD_TDB=$(echo $OLD_TDB_RESPONSE | jq 'map(select(.tag_name|startswith("TDB335")|not)) | sort_by(.created_at) | reverse | .[0]')
+OLD_TDB_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/funjoker/TrinityCore/releases)
+OLD_TDB=$(echo $OLD_TDB_RESPONSE | jq 'map(select(.tag_name|startswith("TDB34"))) | sort_by(.created_at) | reverse | .[0]')
 OLD_TDB_VERSION=$(echo $OLD_TDB | jq -r '.tag_name | split(".")[1]')
 OLD_TDB_FOLDER=$OLD_TDB_VERSION'_'`date +%Y_%m_%d`
 OLD_TDB_URL=$( echo $OLD_TDB | jq -r '.assets | map(select(.name|endswith("7z"))) | .[0].browser_download_url')
@@ -80,27 +80,27 @@ NEW_TDB_HOTFIXES_FILE='TDB_full_hotfixes_'$NEW_WOW_PATCH'.'$NEW_TDB_VERSION'_'$T
 NEW_TDB_RELEASE_NOTES='Release '${NEW_TDB_VERSION: -1}' of '`date +%Y/%m`
 
 # 10. move all sql (excluding needed TDB Release sqls)  update scripts to old
-mkdir -p sql/old/$MAJOR_VERSION.x/auth/$OLD_TDB_FOLDER && mv sql/updates/auth/master/* sql/old/$MAJOR_VERSION.x/auth/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$MAJOR_VERSION.x/characters/$OLD_TDB_FOLDER && mv sql/updates/characters/master/* sql/old/$MAJOR_VERSION.x/characters/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$MAJOR_VERSION.x/world/$OLD_TDB_FOLDER && mv sql/updates/world/master/* sql/old/$MAJOR_VERSION.x/world/$OLD_TDB_FOLDER/
-mkdir -p sql/old/$MAJOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER && mv sql/updates/hotfixes/master/* sql/old/$MAJOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/auth/$OLD_TDB_FOLDER && mv sql/updates/auth/wotlk_classic/* sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/auth/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/characters/$OLD_TDB_FOLDER && mv sql/updates/characters/wotlk_classic/* sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/characters/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/world/$OLD_TDB_FOLDER && mv sql/updates/world/wotlk_classic/* sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/world/$OLD_TDB_FOLDER/
+mkdir -p sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER && mv sql/updates/hotfixes/wotlk_classic/* sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/hotfixes/$OLD_TDB_FOLDER/
 # 10.1 update db updates_include
-mysql -uroot -D auth -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/auth', 'ARCHIVED');"
-mysql -uroot -D characters -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/characters', 'ARCHIVED');"
-mysql -uroot -D world -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/world', 'ARCHIVED');"
-mysql -uroot -D hotfixes -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/hotfixes', 'ARCHIVED');"
+mysql -uroot -D auth -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/auth', 'ARCHIVED');"
+mysql -uroot -D characters -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/characters', 'ARCHIVED');"
+mysql -uroot -D world -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/world', 'ARCHIVED');"
+mysql -uroot -D hotfixes -e "REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/hotfixes', 'ARCHIVED');"
 
 # 11. add the first sql update (making sure there isn't already a SQL file with the same name)
 # 11.1 auth db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/auth/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION"."$MINOR_VERSION".x/auth/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
-    cat > sql/updates/auth/master/$TODAY\_$(printf "%02d" $counter)_auth.sql <<EOL
+    cat > sql/updates/auth/wotlk_classic/$TODAY\_$(printf "%02d" $counter)_auth.sql <<EOL
 -- $NEW_TDB_NAME auth
 UPDATE \`updates\` SET \`state\`='ARCHIVED',\`speed\`=0;
-REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/auth', 'ARCHIVED');
+REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/auth', 'ARCHIVED');
 EOL
     break
   fi
@@ -108,13 +108,13 @@ done
 # 11.2 characters db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/characters/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION"."$MINOR_VERSION".x/characters/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
-    cat > sql/updates/characters/master/$TODAY\_$(printf "%02d" $counter)_characters.sql <<EOL
+    cat > sql/updates/characters/wotlk_classic/$TODAY\_$(printf "%02d" $counter)_characters.sql <<EOL
 -- $NEW_TDB_NAME characters
 UPDATE \`updates\` SET \`state\`='ARCHIVED',\`speed\`=0;
-REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/characters', 'ARCHIVED');
+REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/characters', 'ARCHIVED');
 EOL
     break
   fi
@@ -122,14 +122,14 @@ done
 # 11.3 world db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/world/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION"."$MINOR_VERSION".x/world/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
-    cat > sql/updates/world/master/$TODAY\_$(printf "%02d" $counter)_world.sql <<EOL
+    cat > sql/updates/world/wotlk_classic/$TODAY\_$(printf "%02d" $counter)_world.sql <<EOL
 -- $NEW_TDB_NAME world
 UPDATE \`version\` SET \`db_version\`='$NEW_TDB_NAME', \`cache_id\`=$NEW_TDB_VERSION LIMIT 1;
 UPDATE \`updates\` SET \`state\`='ARCHIVED',\`speed\`=0;
-REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/world', 'ARCHIVED');
+REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/world', 'ARCHIVED');
 EOL
     break
   fi
@@ -138,13 +138,13 @@ git add sql
 # 11.4 hotfixes db
 for((counter=0;;counter++))
 do
-  if test -n "$(find ./sql/old/"$MAJOR_VERSION".x/hotfixes/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
+  if test -n "$(find ./sql/old/"$MAJOR_VERSION"."$MINOR_VERSION".x/hotfixes/$OLD_TDB_FOLDER/ -maxdepth 1 -name "$TODAY"_$(printf "%02d" $counter)\*.sql -print -quit)"; then
     continue
   else
-    cat > sql/updates/hotfixes/master/$TODAY\_$(printf "%02d" $counter)_hotfixes.sql <<EOL
+    cat > sql/updates/hotfixes/wotlk_classic/$TODAY\_$(printf "%02d" $counter)_hotfixes.sql <<EOL
 -- $NEW_TDB_NAME hotfixes
 UPDATE \`updates\` SET \`state\`='ARCHIVED',\`speed\`=0;
-REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.x/hotfixes', 'ARCHIVED');
+REPLACE INTO \`updates_include\` (\`path\`, \`state\`) VALUES ('$/sql/old/$MAJOR_VERSION.$MINOR_VERSION.x/hotfixes', 'ARCHIVED');
 EOL
     break
   fi
@@ -225,7 +225,7 @@ git tag $NEW_TDB_TAG
 git push $PUSH_URL $NEW_TDB_TAG >/dev/null 2>&1
 # 23. create a GitHub release
 cd tdb
-NEW_RELEASE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -d '{"tag_name":"'"$NEW_TDB_TAG"'","target_commitish":"master","name":"'"$NEW_TDB_NAME"'","body":"### ![master](https://img.shields.io/badge/branch-master-yellow.svg)\n'"$NEW_TDB_RELEASE_NOTES"'\n","draft":true,"prerelease":false}' $GITHUB_API)
+NEW_RELEASE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -d '{"tag_name":"'"$NEW_TDB_TAG"'","target_commitish":"wotlk_classic","name":"'"$NEW_TDB_NAME"'","body":"### ![wotlk_classic](https://img.shields.io/badge/branch-wotlk_classic-yellow.svg)\n'"$NEW_TDB_RELEASE_NOTES"'\n","draft":true,"prerelease":false}' $GITHUB_API)
 echo $NEW_RELEASE_RESPONSE
 curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" $(echo $NEW_RELEASE_RESPONSE | jq -r '.upload_url' | sed -e 's${?name,label}$$g')'?name='"$NEW_TDB_FILE"'.7z'  --data-binary @$NEW_TDB_FILE.7z
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X 'PATCH' $(echo $NEW_RELEASE_RESPONSE | jq -r '.url') -d '{"draft":false}'
