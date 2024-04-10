@@ -7,14 +7,14 @@ on:
 jobs:
   tier0:
     name: 3.3.5 branch
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-10 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
         sudo systemctl start mysql.service
     - name: Run release script
       env:
@@ -28,7 +28,7 @@ jobs:
   tier1:
     name: ${{ matrix.BRANCH }} (needs 3.3.5)
     needs: tier0
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -38,8 +38,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-10 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
         sudo systemctl start mysql.service
     - name: Run release script
       env:
@@ -53,7 +53,7 @@ jobs:
   tier2:
     name: ${{ matrix.BRANCH }} (needs 3.3.5-base_patch)
     needs: tier1
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -63,8 +63,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-10 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
         sudo systemctl start mysql.service
     - name: Run release script
       env:
