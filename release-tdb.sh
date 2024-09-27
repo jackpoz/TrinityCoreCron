@@ -133,15 +133,15 @@ mysql -uroot -D characters -e "update \`worldstates\` set \`value\`=0;"
 mysqldump -uroot auth --default-character-set='utf8mb4' --routines --hex-blob --result-file sql/base/auth_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/auth_database.sql
 sed -i -e 's$),($),\n($g' sql/base/auth_database.sql
-sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/auth_database.sql
+sed -i -e 's/DEFINER=.* \(SQL SECURITY\)/\1/' sql/base/auth_database.sql
 sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/auth_database.sql
 mysqldump -uroot characters --default-character-set='utf8mb4' --routines --hex-blob --result-file sql/base/characters_database.sql
 sed -i -e 's$VALUES ($VALUES\n($g' sql/base/characters_database.sql
 sed -i -e 's$),($),\n($g' sql/base/characters_database.sql
-sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/characters_database.sql
+sed -i -e 's/DEFINER=.* \(SQL SECURITY\)/\1/' sql/base/characters_database.sql
 sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/characters_database.sql
 mysqldump -uroot world --default-character-set='utf8mb4' --routines --no-data --result-file sql/base/dev/world_database.sql
-sed -i -e 's/DEFINER=[^*]*\*/\*/' sql/base/dev/world_database.sql
+sed -i -e 's/DEFINER=.* \(SQL SECURITY\)/\1/' sql/base/dev/world_database.sql
 sed -i -e 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' sql/base/dev/world_database.sql
 git add sql
 
