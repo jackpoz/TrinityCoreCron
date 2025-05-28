@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        BRANCH: [3.3.5-base_patch, 3.3.5-lfgsolo, 3.3.5-vas-autobalance, 3.3.5-solocraft, 3.3.5-skip-dk, 3.3.5-1vs1, 3.3.5-nemesis_anticheat]
+        BRANCH: [3.3.5-base_patch, 3.3.5-lfgsolo, 3.3.5-vas-autobalance, 3.3.5-solocraft, 3.3.5-skip-dk, 3.3.5-nemesis_anticheat]
 
     steps:
     - uses: actions/checkout@v2
