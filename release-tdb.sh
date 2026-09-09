@@ -172,7 +172,7 @@ mysql -uroot < sql/create/create_mysql.sql
 mysql -uroot -D world < tdb/$NEW_TDB_FILE.sql
 
 # 20. update revision_data.h.in.cmake with new TDB file name
-sed -i -e 's$#define DATABASE_FULL_DATABASE      "[A-Za-z0-9$_.]*"$#define DATABASE_FULL_DATABASE      "'$NEW_TDB_WORLD_FILE'.sql"$g' revision_data.h.in.cmake
+sed -i -e 's$#define DATABASE_FULL_DATABASE      "[A-Za-z0-9$_.]*"$#define DATABASE_FULL_DATABASE      "'$NEW_TDB_FILE'.sql"$g' revision_data.h.in.cmake
 git add revision_data.h.in.cmake
 # 21. commit and push
 git commit -m "$NEW_TDB_NAME - "`date +%Y/%m/%d`
