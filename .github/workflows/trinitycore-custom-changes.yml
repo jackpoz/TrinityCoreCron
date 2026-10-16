@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v5
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-13 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 --slave /usr/bin/g++ g++ /usr/bin/g++-13
         sudo systemctl start mysql.service
     - name: Run release script
       env:
@@ -38,8 +38,8 @@ jobs:
     - uses: actions/checkout@v5
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-13 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 --slave /usr/bin/g++ g++ /usr/bin/g++-13
         sudo systemctl start mysql.service
     - name: Run release script
       env:
@@ -63,8 +63,8 @@ jobs:
     - uses: actions/checkout@v5
     - name: Dependencies
       run: |
-        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11 p7zip-full
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
+        sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-13 p7zip-full
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 --slave /usr/bin/g++ g++ /usr/bin/g++-13
         sudo systemctl start mysql.service
     - name: Run release script
       env:
