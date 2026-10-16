@@ -53,6 +53,7 @@ jobs:
   tier2:
     name: ${{ matrix.BRANCH }} (needs 3.3.5-base_patch)
     needs: tier1
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
